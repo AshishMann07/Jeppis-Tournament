@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>7-A-Side Editable Lineup</title>
+    <title>Jeppis Nepal Lineup</title>
     <style>
       body {
         margin: 0;
@@ -25,8 +25,9 @@
       }
 
       header img {
-        width: 80px;
+        width: 180px;
         margin-bottom: 10px;
+        mix-blend-mode: multiply;
       }
 
       h1 {
@@ -91,31 +92,37 @@
         left: 50%;
         transform: translate(-50%, -50%);
       }
+
       #pos-def1 {
         top: 70%;
         left: 30%;
         transform: translate(-50%, -50%);
       }
+
       #pos-def2 {
         top: 70%;
         left: 70%;
         transform: translate(-50%, -50%);
       }
+
       #pos-mid1 {
         top: 48%;
         left: 20%;
         transform: translate(-50%, -50%);
       }
+
       #pos-mid2 {
         top: 45%;
         left: 50%;
         transform: translate(-50%, -50%);
       }
+
       #pos-mid3 {
         top: 48%;
         left: 80%;
         transform: translate(-50%, -50%);
       }
+
       #pos-fwd {
         top: 20%;
         left: 50%;
@@ -248,7 +255,7 @@
         }
 
         .position span {
-          display: none; /* Hide secondary labels on very small screens */
+          display: none;
         }
 
         .controls button {
@@ -265,7 +272,7 @@
   <body>
     <header>
       <div class="logo-wrap">
-        <img src="/JEPPIS LOGO.png" alt="Soccer Logo" />
+        <img src="/JEPPIS-LOGO.png " alt="Soccer Logo" />
       </div>
       <h1>JEPPIS NEPAL TOURNAMENT</h1>
     </header>
@@ -310,124 +317,117 @@
 
     <div class="player-list">
       <h2>Squad List (15 Players)</h2>
-      <ul id="playerList">
-        <li>Subash Sangroula (GK)</li>
-        <li>Sanjaya Kandel (DEF)</li>
-        <li>Saroj Acharya (DEF)</li>
-        <li>Saroj Tamang (DEF)</li>
-        <li>Roshan Budathoki (MID)</li>
-        <li>Bhabis Limbu (MID)</li>
-        <li>Suresh Maharjan (FWD)</li>
-        <li>Aabeg Gautam (GK)</li>
-        <li>Sajan Basnet (MID)</li>
-        <li>Uddav Dhakal (FWD)</li>
-        <li>Ashim Bastola (DEF)</li>
-        <li>Aniel Thagunna (FWD)</li>
-        <li>Diwakar Adhikari (MID)</li>
-        <li>Mohan Gurung (MID)</li>
-        <li>Soman Budathoki (MID)</li>
-      </ul>
+      <ul id="playerList"></ul>
     </div>
 
     <footer>
       <p>
-        <strong>JEPPIS NEPAL CLUB</strong> &nbsp;|&nbsp; &copy2025 &nbsp;|&nbsp;
-        Location: PIETARSAARI, FINLAND
+        <strong>JEPPIS NEPAL CLUB</strong> &nbsp;|&nbsp; &copy;2025
+        &nbsp;|&nbsp; Location: PIETARSAARI, FINLAND
       </p>
-      <p>More: <a href="" style="color: #1e90ff">info@jeppisnepal.fi</a></p>
+      <p>More: <a href="#" style="color: #1e90ff">info@jeppisnepal.fi</a></p>
     </footer>
 
     <script>
-      let selectedPosition = null;
-
       const positions = document.querySelectorAll(".position");
       const playerList = document.getElementById("playerList");
+      let selectedPosition = null;
 
-      // Load saved lineup from localStorage
+      const defaultPlayers = [
+        "Subash Sangroula (GK)",
+        "Sanjaya Kandel (DEF)",
+        "Saroj Acharya (DEF)",
+        "Saroj Tamang (DEF)",
+        "Roshan Budathoki (MID)",
+        "Bhabis Limbu (MID)",
+        "Suresh Maharjan (FWD)",
+        "Aabeg Gautam (GK)",
+        "Sajan Basnet (MID)",
+        "Uddav Dhakal (FWD)",
+        "Ashim Bastola (DEF)",
+        "Aniel Thagunna (FWD)",
+        "Diwakar Adhikari (MID)",
+        "Mohan Gurung (MID)",
+        "Soman Budathoki (MID)",
+      ];
+
       window.addEventListener("load", () => {
-        const saved = JSON.parse(localStorage.getItem("lineup")) || {};
-        positions.forEach((pos) => {
-          const posId = pos.id;
-          const playerName = saved[posId];
-          const role = pos.dataset.role;
+        const saved = localStorage.getItem("lineup");
 
-          if (playerName) {
-            pos.dataset.player = playerName;
-            pos.innerHTML = `${role}<br><span>${role}</span>`;
+        if (!saved) {
+          fetch("default-lineup.json")
+            .then((res) => res.json())
+            .then((defaultLineup) => {
+              loadLineup(defaultLineup);
+              localStorage.setItem("lineup", JSON.stringify(defaultLineup));
+            })
+            .catch(() => {
+              renderPlayerList(defaultPlayers);
+            });
+        } else {
+          const savedLineup = JSON.parse(saved);
+          loadLineup(savedLineup);
+        }
+      });
+
+      function loadLineup(lineup) {
+        const assignedPlayers = [];
+
+        positions.forEach((pos) => {
+          const id = pos.id;
+          const player = lineup[id];
+          if (player) {
+            pos.dataset.player = player;
+            pos.innerHTML = player;
+            assignedPlayers.push(player);
           } else {
             clearPosition(pos);
           }
         });
 
-        const assignedPlayers = Object.values(saved);
-        Array.from(playerList.children).forEach((li) => {
-          if (assignedPlayers.includes(li.textContent)) {
-            li.remove();
-          }
-        });
-      });
+        const remainingPlayers = defaultPlayers.filter(
+          (p) => !assignedPlayers.includes(p)
+        );
+        renderPlayerList(remainingPlayers);
+      }
 
-      // Assigning player
+      function renderPlayerList(players = defaultPlayers) {
+        const list = document.getElementById("playerList");
+        list.innerHTML = "";
+        players.forEach((p) => {
+          const li = document.createElement("li");
+          li.textContent = p;
+          list.appendChild(li);
+        });
+      }
+
       positions.forEach((pos) => {
         pos.addEventListener("click", () => {
           if (pos.dataset.player) {
-            const playerName = pos.dataset.player;
-            addPlayerToList(playerName);
+            addPlayerToList(pos.dataset.player);
             clearPosition(pos);
             saveLineup();
             return;
           }
 
-          if (selectedPosition) {
-            selectedPosition.classList.remove("highlight");
-          }
+          if (selectedPosition) selectedPosition.classList.remove("highlight");
           selectedPosition = pos;
           pos.classList.add("highlight");
         });
       });
 
-      playerList.addEventListener("click", function (e) {
+      playerList.addEventListener("click", (e) => {
         const li = e.target;
         if (li.tagName !== "LI" || !selectedPosition) return;
 
         const playerName = li.textContent;
-        const role = selectedPosition.dataset.role;
-
-        selectedPosition.innerHTML = `${playerName}`;
         selectedPosition.dataset.player = playerName;
+        selectedPosition.innerHTML = playerName;
         selectedPosition.classList.remove("highlight");
         selectedPosition = null;
         li.remove();
         saveLineup();
       });
-
-      // Reset all
-      document.getElementById("resetBtn").addEventListener("click", () => {
-        positions.forEach((pos) => {
-          if (pos.dataset.player) {
-            addPlayerToList(pos.dataset.player);
-            clearPosition(pos);
-          } else {
-            clearPosition(pos);
-          }
-          pos.classList.remove("highlight");
-        });
-        selectedPosition = null;
-        localStorage.removeItem("lineup");
-      });
-
-      // Helpers
-      function clearPosition(pos) {
-        const role = pos.dataset.role;
-        pos.innerHTML = `${role}<br><span>Click to assign</span>`;
-        pos.dataset.player = "";
-      }
-
-      function addPlayerToList(name) {
-        const newLi = document.createElement("li");
-        newLi.textContent = name;
-        playerList.appendChild(newLi);
-      }
 
       function saveLineup() {
         const lineup = {};
@@ -439,99 +439,29 @@
         localStorage.setItem("lineup", JSON.stringify(lineup));
       }
 
-      // Download lineup as JSON file
-      document.getElementById("downloadBtn").addEventListener("click", () => {
-        const lineup = {};
-        positions.forEach((pos) => {
-          if (pos.dataset.player) {
-            lineup[pos.id] = pos.dataset.player;
-          }
-        });
-        const blob = new Blob([JSON.stringify(lineup, null, 2)], {
-          type: "application/json",
-        });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "lineup.json";
-        a.click();
-        URL.revokeObjectURL(url);
-      });
+      function clearPosition(pos) {
+        const role = pos.dataset.role;
+        pos.innerHTML = `${role}<br><span>Click to assign</span>`;
+        pos.dataset.player = "";
+      }
 
-      // Upload lineup from JSON file
-      document.getElementById("uploadBtn").addEventListener("click", () => {
-        document.getElementById("uploadInput").click();
-      });
+      function addPlayerToList(name) {
+        const li = document.createElement("li");
+        li.textContent = name;
+        playerList.appendChild(li);
+      }
 
-      document
-        .getElementById("uploadInput")
-        .addEventListener("change", function () {
-          const file = this.files[0];
-          if (!file) return;
-
-          const reader = new FileReader();
-          reader.onload = function (e) {
-            try {
-              const loadedLineup = JSON.parse(e.target.result);
-              resetLineup(); // Clear current lineup
-              for (const posId in loadedLineup) {
-                const pos = document.getElementById(posId);
-                if (pos) {
-                  pos.dataset.player = loadedLineup[posId];
-                  pos.innerHTML = loadedLineup[posId];
-                }
-              }
-
-              // Remove assigned players from list
-              const assignedPlayers = Object.values(loadedLineup);
-              Array.from(playerList.children).forEach((li) => {
-                if (assignedPlayers.includes(li.textContent)) {
-                  li.remove();
-                }
-              });
-
-              saveLineup(); // Save to localStorage
-            } catch (err) {
-              alert("Failed to load lineup. Invalid JSON.");
-            }
-          };
-          reader.readAsText(file);
-        });
-
-      // Utility: Reset lineup (used on upload)
-      function resetLineup() {
+      document.getElementById("resetBtn").addEventListener("click", () => {
         positions.forEach((pos) => {
           if (pos.dataset.player) {
             addPlayerToList(pos.dataset.player);
-            clearPosition(pos);
-          } else {
-            clearPosition(pos);
           }
+          clearPosition(pos);
           pos.classList.remove("highlight");
         });
         selectedPosition = null;
         localStorage.removeItem("lineup");
-      }
-
-      function loadLineup(lineup) {
-        positions.forEach((pos) => {
-          const posId = pos.id;
-          const playerName = lineup[posId];
-          if (playerName) {
-            pos.dataset.player = playerName;
-            pos.innerHTML = playerName;
-          } else {
-            clearPosition(pos);
-          }
-        });
-
-        // Rebuild the player list excluding assigned players
-        const assignedPlayers = Object.values(lineup);
-        const remainingPlayers = defaultPlayers.filter(
-          (p) => !assignedPlayers.includes(p)
-        );
-        renderPlayerList(remainingPlayers);
-      }
+      });
     </script>
   </body>
 </html>
