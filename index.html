@@ -285,11 +285,11 @@
       const role = pos.dataset.role;
 
       if (playerName) {
-        pos.dataset.player = playerName;
-        pos.innerHTML = `${role}<br><span>${role}</span>`;
-      } else {
-        clearPosition(pos);
-      }
+    pos.dataset.player = playerName;
+    pos.innerHTML = playerName;
+     } else {
+    clearPosition(pos);
+    }
     });
 
     const assignedPlayers = Object.values(saved);
