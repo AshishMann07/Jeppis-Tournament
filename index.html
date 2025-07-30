@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>7-A-Side Editable Lineup</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, #0e4d1b, #1a1a1a);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.6);
+      width: 100%;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    header img {
+      width: 80px;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2.5em;
+    }
+
+    .pitch {
+      position: relative;
+      width: 90%;
+      max-width: 800px;
+      height: 500px;
+      margin: 30px auto;
+      background: repeating-linear-gradient(
+        0deg,
+        #18733e,
+        #18733e 20px,
+        #1d8045 20px,
+        #1d8045 40px
+      );
+      border: 5px solid #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    .position {
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: #1e90ff;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.8em;
+      text-align: center;
+      border: 2px solid white;
+      box-shadow: 0 0 6px #000;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .position span {
+      font-size: 0.7em;
+      opacity: 0.8;
+    }
+
+    /* Fixed layout positions */
+    #pos-gk   { top: 88%; left: 50%; transform: translate(-50%, -50%); }
+    #pos-def1 { top: 70%; left: 30%; transform: translate(-50%, -50%); }
+    #pos-def2 { top: 70%; left: 70%; transform: translate(-50%, -50%); }
+    #pos-mid1 { top: 48%; left: 20%; transform: translate(-50%, -50%); }
+    #pos-mid2 { top: 45%; left: 50%; transform: translate(-50%, -50%); }
+    #pos-mid3 { top: 48%; left: 80%; transform: translate(-50%, -50%); }
+    #pos-fwd  { top: 20%; left: 50%; transform: translate(-50%, -50%); }
+
+    .player-list {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    }
+
+    .player-list h2 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .player-list ul {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+    }
+
+    .player-list li {
+      margin: 8px 10px;
+      background: #ffffff20;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .player-list li:hover {
+      background: #1e90ff;
+    }
+
+    .highlight {
+      outline: 3px solid yellow;
+    }
+
+    .controls {
+      margin: 20px;
+      text-align: center;
+    }
+
+    .controls button {
+      background: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .controls button:hover {
+      background: #e60000;
+    }
+
+    footer {
+      background: #111;
+      padding: 20px;
+      text-align: center;
+      color: #aaa;
+      font-size: 0.9em;
+      margin-top: auto;
+      width: 100%;
+    }
+
+    @media (max-width: 768px) {
+  h1 {
+    font-size: 1.8em;
+  }
+
+  .pitch {
+    height: 400px;
+  }
+
+  .position {
+    width: 50px;
+    height: 50px;
+    font-size: 0.7em;
+  }
+
+  .position span {
+    font-size: 0.6em;
+  }
+
+  .player-list ul {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .player-list li {
+    width: 90%;
+    text-align: center;
+    margin: 5px 0;
+  }
+
+  .controls button {
+    width: 90%;
+    padding: 12px;
+    font-size: 1em;
+  }
+
+  footer {
+    font-size: 0.8em;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.4em;
+  }
+
+  .pitch {
+    height: 350px;
+  }
+
+  .position {
+    width: 45px;
+    height: 45px;
+    font-size: 0.6em;
+  }
+
+  .position span {
+    display: none; /* Hide secondary labels on very small screens */
+  }
+
+  .controls button {
+    font-size: 0.9em;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <header>
+    <img src="/JEPPIS LOGO.png" alt="Soccer Logo"  />
+    <h1>JEPPIS NEPAL TOURNAMENT</h1>
+  </header>
+
+  <h2 style="margin-top: 20px; color: #fff;">Starting 7 Lineup</h2>
+
+  <div class="pitch">
+    <div class="position" id="pos-gk" data-role="GK" data-player="">GK<br><span>Click to assign</span></div>
+    <div class="position" id="pos-def1" data-role="DEF" data-player="">DEF 1<br><span>Click to assign</span></div>
+    <div class="position" id="pos-def2" data-role="DEF" data-player="">DEF 2<br><span>Click to assign</span></div>
+    <div class="position" id="pos-mid1" data-role="MID" data-player="">MID 1<br><span>Click to assign</span></div>
+    <div class="position" id="pos-mid2" data-role="MID" data-player="">MID 2<br><span>Click to assign</span></div>
+    <div class="position" id="pos-mid3" data-role="MID" data-player="">MID 3<br><span>Click to assign</span></div>
+    <div class="position" id="pos-fwd" data-role="FWD" data-player="">FWD<br><span>Click to assign</span></div>
+  </div>
+
+  <div class="controls">
+    <button id="resetBtn">Reset Lineup</button>
+  </div>
+
+  <div class="player-list">
+    <h2>Squad List (15 Players)</h2>
+    <ul id="playerList">
+      <li>Subash Sangroula (GK)</li>
+      <li>Sanjaya Kandel (DEF)</li>
+      <li>Saroj Acharya (DEF)</li>
+      <li>Saroj Tamang (MID)</li>
+      <li>Roshan Budathoki (MID)</li>
+      <li>Bhabis Limbu (MID)</li>
+      <li>Suresh Maharjan (FWD)</li>
+      <li>Aabeg Gautam (GK)</li>
+      <li>Ashok Bindukar (FWD)</li>
+      <li>Uddav Dhakal (FWD)</li>
+      <li>Ashim Bastola (DEF)</li>
+      <li>Manoj GC (DEF)</li>
+      <li>Diwakar Adhikari (MID)</li>
+      <li>Mohan Gurung (MID)</li>
+      <li>Soman Budathoki (MID)</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p><strong>JEPPIS NEPAL CLUB</strong> &nbsp;|&nbsp; &copy2025 &nbsp;|&nbsp; Location: PIETARSAARI, FINLAND</p>
+    <p>More: <a href="" style="color:#1e90ff;">info@jeppisnepal.fi</a></p>
+  </footer>
+
+  <script>
+  let selectedPosition = null;
+
+  const positions = document.querySelectorAll('.position');
+  const playerList = document.getElementById('playerList');
+
+  // Load saved lineup from localStorage
+  window.addEventListener('load', () => {
+    const saved = JSON.parse(localStorage.getItem('lineup')) || {};
+    positions.forEach(pos => {
+      const posId = pos.id;
+      const playerName = saved[posId];
+      const role = pos.dataset.role;
+
+      if (playerName) {
+        pos.dataset.player = playerName;
+        pos.innerHTML = `${role}<br><span>${role}</span>`;
+      } else {
+        clearPosition(pos);
+      }
+    });
+
+    const assignedPlayers = Object.values(saved);
+    Array.from(playerList.children).forEach(li => {
+      if (assignedPlayers.includes(li.textContent)) {
+        li.remove();
+      }
+    });
+  });
+
+  // Assigning player
+  positions.forEach(pos => {
+    pos.addEventListener('click', () => {
+      if (pos.dataset.player) {
+        const playerName = pos.dataset.player;
+        addPlayerToList(playerName);
+        clearPosition(pos);
+        saveLineup();
+        return;
+      }
+
+      if (selectedPosition) {
+        selectedPosition.classList.remove('highlight');
+      }
+      selectedPosition = pos;
+      pos.classList.add('highlight');
+    });
+  });
+
+  playerList.addEventListener('click', function (e) {
+  const li = e.target;
+  if (li.tagName !== 'LI' || !selectedPosition) return;
+
+  const playerName = li.textContent;
+  const role = selectedPosition.dataset.role;
+
+  selectedPosition.innerHTML = `${playerName}`;
+  selectedPosition.dataset.player = playerName;
+  selectedPosition.classList.remove('highlight');
+  selectedPosition = null;
+  li.remove();
+  saveLineup();
+});
+
+
+  // Reset all
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    positions.forEach(pos => {
+      if (pos.dataset.player) {
+        addPlayerToList(pos.dataset.player);
+        clearPosition(pos);
+      } else {
+        clearPosition(pos);
+      }
+      pos.classList.remove('highlight');
+    });
+    selectedPosition = null;
+    localStorage.removeItem('lineup');
+  });
+
+  // Helpers
+  function clearPosition(pos) {
+  const role = pos.dataset.role;
+  pos.innerHTML = `${role}<br><span>Click to assign</span>`;
+  pos.dataset.player = '';
+}
+
+
+  function addPlayerToList(name) {
+    const newLi = document.createElement('li');
+    newLi.textContent = name;
+    playerList.appendChild(newLi);
+  }
+
+  function saveLineup() {
+    const lineup = {};
+    positions.forEach(pos => {
+      if (pos.dataset.player) {
+        lineup[pos.id] = pos.dataset.player;
+      }
+    });
+    localStorage.setItem('lineup', JSON.stringify(lineup));
+  }
+</script>
+
+</body>
+</html>
